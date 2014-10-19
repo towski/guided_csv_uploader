@@ -1,0 +1,76 @@
+<form id='file_form'>
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+<p>
+<input type='radio' name='employee_amount' checked/>Individual
+<input type='radio' name='employee_amount'/>Multiple
+</p>
+<p>
+<input type='radio' class='cell_type' name='hey' value=0 checked/>Employee Name
+<input type='radio' class='cell_type' name='hey' value=1 />Clocked In
+<input type='radio' class='cell_type' name='hey' value=2 />Clocked out
+</p>
+<table id='table'></table>
+<input type='submit'/>
+</form>
+
+<script>
+  var colors = {}
+  colors[0] = "red"
+  colors[1] = "green"
+  colors[2] = "blue"
+  function tableCellClick(event){
+    var radios = document.querySelectorAll('.cell_type:checked') 
+    if(event.target.clicked == undefined){
+      event.target.style.border = "1px solid " + colors[radios[0].value]
+      event.target.clicked = true
+    } else {
+      event.target.style.border = ""
+      event.target.clicked = undefined
+    }
+  }
+
+  function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+      var reader = new FileReader();
+      var table = document.querySelector("#table")
+      table.innerHTML = ''
+      reader.onload = function(event){ 
+        var char_index = 0
+        var cell_value = ''
+        var table_row = document.createElement('tr')
+        var table_cell = document.createElement('td')
+        table_cell.onclick = tableCellClick;
+        var current_char
+        while(char_index < this.result.length){
+          current_char = this.result[char_index]
+          if(this.result[char_index] == ','){
+            table_cell.innerHTML = cell_value
+            table_row.appendChild(table_cell)
+            table_cell = document.createElement('td')
+            table_cell.onclick = tableCellClick;
+            cell_value = ''
+          } else if(current_char == '\n' || current_char == '\r'){
+            table.appendChild(table_row)
+            table_row = document.createElement('tr')
+            cell_value = ''
+          } else {
+            cell_value += this.result[char_index]
+          }
+          char_index += 1;
+        }
+      }.bind(reader);
+      reader.readAsText(f);
+    }
+  }
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>

@@ -1,7 +1,11 @@
 # if your db is currently up to date, just run make setup to touch all the files. otherwise start the db from scratch
 MIGRATIONS = $(shell ls db/migrate)
 RUN_FILES = $(addprefix db/run/,$(MIGRATIONS))
-all: db/run migrate db/run/tests_updated
+all: db/run release
+
+release:
+	$(MAKE) migrate
+	$(MAKE) db/run/tests_updated
  
 db/run:
 	mkdir -p db/run

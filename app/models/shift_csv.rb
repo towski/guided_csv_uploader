@@ -5,10 +5,21 @@ class ShiftCsv < ActiveRecord::Base
   has_attached_file :csv 
   validates_attachment :csv, :presence => true, :size => { :in => 0..1000.kilobytes }
   do_not_validate_attachment_file_type :csv
-  validates_size_of :data_finders, :minimum => 3
+  validates_size_of :data_finders, :minimum => 3, :maximum => 8
 
   has_many :data_finders, :class_name => "ShiftCsvDataFinder"
   has_many :dummy_employees
+
+  before_save :has_all_data_finders
+
+  def has_all_data_finders
+    ["employee_name", "clocked_in_date", "clocked_in_time", "clocked_out_date", "clocked_out_time"].each do |data_type|
+      if data_finders.select{|d| d.data_type == data_type }.blank?
+        errors[:data_finders] = "no #{data_type} for model"
+        return false
+      end
+    end
+  end
 
   after_save :extract_data
 
@@ -38,7 +49,8 @@ class ShiftCsv < ActiveRecord::Base
           rounded_in_time = seconds_away_from_interval < 450 ? clocked_in_time - seconds_away_from_interval : clocked_in_time + seconds_away_from_interval
           seconds_away_from_interval = clocked_out_time % 900
           rounded_out_time = seconds_away_from_interval < 450 ? clocked_out_time - seconds_away_from_interval : clocked_out_time + seconds_away_from_interval
-          next if rounded_in_time == rounded_out_time
+          # if the shift is no_time
+          next if rounded_in_time == rounded_out_time && clocked_out_date == clocked_in_date
           shift = employee.dummy_shifts.create!(
             :clocked_in_at => clocked_in_date.to_time + clocked_in_time, 
             :clocked_in_time => rounded_in_time,

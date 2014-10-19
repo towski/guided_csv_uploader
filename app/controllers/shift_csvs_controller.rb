@@ -1,4 +1,7 @@
 class ShiftCsvsController < ApplicationController
+  def new
+  end
+
   def create
     shift = ShiftCsv.new shift_csv_params
     params[:data_finders].each do |data_finder_hash|
@@ -7,6 +10,7 @@ class ShiftCsvsController < ApplicationController
     if shift.save
       redirect_to confirm_shift_csv_path(1)
     else
+      render :new
     end
   end
 

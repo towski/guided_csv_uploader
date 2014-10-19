@@ -11,9 +11,11 @@ class ShiftCsvTest < ActiveSupport::TestCase
   def test_with_file
     shift = ShiftCsv.new
     shift.csv = File.new("test/fixtures/example.csv")
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
+    shift.data_finders.build(:column_number => 2, :starting_row => 2, :data_type => "employee_name")
+    shift.data_finders.build(:column_number => 4, :starting_row => 2, :data_type => "clocked_in_date")
+    shift.data_finders.build(:column_number => 5, :starting_row => 2, :data_type => "clocked_in_time")
+    shift.data_finders.build(:column_number => 6, :starting_row => 2, :data_type => "clocked_out_date")
+    shift.data_finders.build(:column_number => 7, :starting_row => 2, :data_type => "clocked_out_time")
     shift.dont_extract_data = true
     assert shift.save
   end
@@ -31,9 +33,11 @@ class ShiftCsvTest < ActiveSupport::TestCase
 
   def test_make_data_finders_without_data_type
     shift = ShiftCsv.new :csv => File.new("test/fixtures/example.csv")
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
+    shift.data_finders.build(:column_number => 2, :starting_row => 2, :data_type => "employee_name")
+    shift.data_finders.build(:column_number => 4, :starting_row => 2, :data_type => "clocked_in_date")
+    shift.data_finders.build(:column_number => 5, :starting_row => 2, :data_type => "clocked_in_time")
+    shift.data_finders.build(:column_number => 6, :starting_row => 2, :data_type => "clocked_out_date")
+    shift.data_finders.build(:column_number => 7, :starting_row => 2, :data_type => "clocked_out_time")
     shift.dont_extract_data = true
     shift.save!
     finder = shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => "not_a_data_type")
@@ -42,9 +46,11 @@ class ShiftCsvTest < ActiveSupport::TestCase
 
   def test_data_finders
     shift = ShiftCsv.new :csv => File.new("test/fixtures/example.csv")
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
-    shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])
+    shift.data_finders.build(:column_number => 2, :starting_row => 2, :data_type => "employee_name")
+    shift.data_finders.build(:column_number => 4, :starting_row => 2, :data_type => "clocked_in_date")
+    shift.data_finders.build(:column_number => 5, :starting_row => 2, :data_type => "clocked_in_time")
+    shift.data_finders.build(:column_number => 6, :starting_row => 2, :data_type => "clocked_out_date")
+    shift.data_finders.build(:column_number => 7, :starting_row => 2, :data_type => "clocked_out_time")
     shift.dont_extract_data = true
     shift.save!
     finder = shift.data_finders.build(:column_number => 1, :starting_row => 2, :data_type => FINDER_DATA_TYPES[0])

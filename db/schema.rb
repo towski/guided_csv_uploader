@@ -51,12 +51,9 @@ ActiveRecord::Schema.define(version: 20141019044153) do
   end
 
   create_table "shift_csvs", force: true do |t|
+    t.boolean  "multiple_employees"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "csv_file_name"
-    t.string   "csv_content_type"
-    t.integer  "csv_file_size"
-    t.datetime "csv_updated_at"
   end
 
   create_table "shift_dummies", force: true do |t|
