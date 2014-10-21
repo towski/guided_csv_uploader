@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20141019044153) do
     t.datetime "updated_at"
   end
 
-  add_index "dummy_employees", ["identifier"], name: "index_dummy_employees_on_identifier", unique: true
+  add_index "dummy_employees", ["identifier", "shift_csv_id"], name: "index_dummy_employees_on_identifier_and_shift_csv_id", unique: true
 
   create_table "dummy_shifts", force: true do |t|
     t.integer  "dummy_employee_id"
@@ -35,12 +35,6 @@ ActiveRecord::Schema.define(version: 20141019044153) do
 
   add_index "dummy_shifts", ["wday"], name: "index_dummy_shifts_on_wday"
 
-  create_table "employee_dummies", force: true do |t|
-    t.integer  "shift_csv_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "shift_csv_data_finders", force: true do |t|
     t.integer  "column_number"
     t.integer  "starting_row"
@@ -52,16 +46,13 @@ ActiveRecord::Schema.define(version: 20141019044153) do
 
   create_table "shift_csvs", force: true do |t|
     t.boolean  "multiple_employees"
+    t.string   "employee_name"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "shift_dummies", force: true do |t|
-    t.datetime "shift_start"
-    t.datetime "shift_end"
-    t.string   "day_of_week"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string   "csv_file_name"
+    t.string   "csv_content_type"
+    t.integer  "csv_file_size"
+    t.datetime "csv_updated_at"
   end
 
 end

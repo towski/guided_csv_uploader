@@ -1,32 +1,158 @@
-<form id='file_form'>
-<input type="file" id="files" name="files[]" multiple />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<% flash.each do |key, value| %>
+  <%= content_tag :div, value, class: "flash #{key}" %>
+<% end %>
+<p>
+  <% @shift.errors.full_messages.each do |message| %>
+    <p> <%= message %> </p>
+  <% end %>
+</p>
+<form id='fileform' method='post' enctype="multipart/form-data" action="<%= shift_csvs_path %>">
+<%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %> 
+  <input type="file" id="files" name="shift_csv[csv]" multiple />
 <output id="list"></output>
 <p>
-<input type='radio' name='employee_amount' checked/>Individual
-<input type='radio' name='employee_amount'/>Multiple
+<input type='hidden' name='shift_csv[multiple_employees]' id='multiple_employees' value=1 />
+<input type='hidden' name='shift_csv[employee_name]' id='employee_name' value=''/>
 </p>
-<p>
-<input type='radio' class='cell_type' name='hey' value=0 checked/>Employee Name
-<input type='radio' class='cell_type' name='hey' value=1 />Clocked In
-<input type='radio' class='cell_type' name='hey' value=2 />Clocked out
+<p id='data_finder_inputs'>
 </p>
+<input type='submit' value='Start Over' onclick='
+cells = []
+var table_cells = document.querySelectorAll(".table_cell")
+for(var i = 0; i < table_cells.length ; i++){
+  var element = table_cells[i]
+  element.style.border = null
+  element.clicked = null
+}
+var holder = document.querySelector("#data_finder_inputs")
+holder.innerHTML = ""
+current_step = 0
+stepDialog()
+return false
+'/>
+<div id="dialog" title="Find your data" style='display:none'>
+</div>
 <table id='table'></table>
-<input type='submit'/>
 </form>
 
+
 <script>
-  var colors = {}
-  colors[0] = "red"
-  colors[1] = "green"
-  colors[2] = "blue"
+  var Cell = function(row, col, value){
+    this.initialize({row: row, col: col, value: value})
+  }
+
+  function showDialog(string){
+    document.querySelector("#dialog").innerHTML = string.replace(/_/g, " ")
+    $( "#dialog" ).dialog()
+    var dialog = document.querySelector("#dialog").parentNode
+    dialog.style.top = 0
+  }
+
+  Cell.prototype = {
+    row: 0,
+    col: 0,
+    value: null,
+    initialize: function(options){
+      this.row = options["row"]
+      this.col = options["col"]
+      this.value = options["value"]
+    }
+  }
+
+  var multiple_employees = true
+  var cells = []
+  var data_finder_cells = {}
+  var current_step = 0
+  var data_finders = ["employee_name", "clocked_in_date", "clocked_in_time", "clocked_out_date", "clocked_out_time"]
+  function detectFinders(){
+    var holder = document.querySelector("#data_finder_inputs")
+    if(!multiple_employees){
+      var employee_name = document.querySelector("#employee_name")
+      var cell = data_finder_cells["employee_name"]
+      employee_name.value = cell.value
+    }
+    data_finders.forEach(function(finder){
+      var cell = data_finder_cells[finder]
+      if(cell == undefined){
+        return false
+      }
+      var input = document.createElement('input')
+      input.type = 'hidden'
+      input.name = 'data_finders[][column_number]'
+      input.value = cell.col
+      holder.appendChild(input)
+      input = document.createElement('input')
+      input.type = 'hidden'
+      input.name = 'data_finders[][starting_row]'
+      input.value = cell.row
+      holder.appendChild(input)
+      input = document.createElement('input')
+      input.type = 'hidden'
+      input.name = 'data_finders[][data_type]'
+      input.value = finder
+      holder.appendChild(input)
+    })
+    return true
+  }
+
+  function validateFinders(){
+    var cell = data_finder_cells["employee_name"]
+    if(cell.value.length == ""){
+      showDialog("Employee name is length 0, please start over")
+      return false
+    }
+    return true
+  }
+
+  var multiple_employees = true
+  function setMultipleEmployees(value){
+    multiple_employees = value
+    var input = document.querySelector("#multiple_employees")
+    input.value = value ? 1 : 0
+    current_step += 1
+    stepDialog()
+  }
+
+  function stepDialog(){
+    if(current_step == 0){
+      showDialog("Is this sheet for multiple employees or a single employee?<input type='submit' value='single' onclick='setMultipleEmployees(false)' /><input type='submit' value='multiple' onclick='setMultipleEmployees(true)'/>")
+    } else if (current_step == 1){
+      if(multiple_employees){
+        showDialog("Select the cell with the first " + data_finders[current_step - 1])
+      } else {
+        showDialog("Select the cell with the employee's name")
+      }
+    } else if (current_step < data_finders.length + 1){
+      showDialog("Select the cell with the first " + data_finders[current_step - 1])
+    } else {
+      if(validateFinders()){
+        if(detectFinders()){
+          showDialog("Ready to submit <input type='submit' onclick='document.querySelector(\"#fileform\").submit();'/>")
+        } else {
+          showDialog("Error processing, please reset")
+        }
+      }
+    }
+  }
+
+  var colors = ["red", "green", "blue", "orange", "purple"]
   function tableCellClick(event){
+    if (current_step == 0){
+      return
+    }
     var radios = document.querySelectorAll('.cell_type:checked') 
     if(event.target.clicked == undefined){
-      event.target.style.border = "1px solid " + colors[radios[0].value]
+      event.target.style.border = "1px solid " + colors[current_step - 1]
       event.target.clicked = true
+      global = event.target
+      data_finder_cells[data_finders[current_step - 1]] = new Cell(event.target.parentElement.rowIndex, event.target.cellIndex, event.target.innerHTML)
+      current_step += 1
+      stepDialog()
     } else {
-      event.target.style.border = ""
-      event.target.clicked = undefined
+      alert("This cell has already been clicked")
     }
   }
 
@@ -40,9 +166,12 @@
                   f.size, ' bytes, last modified: ',
                   f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                   '</li>');
-      var reader = new FileReader();
+      var reader = new FileReader()
       var table = document.querySelector("#table")
+      var tbody = document.createElement('tbody')
       table.innerHTML = ''
+      table.appendChild(tbody)
+      table = tbody
       reader.onload = function(event){ 
         var char_index = 0
         var cell_value = ''
@@ -57,6 +186,7 @@
             table_row.appendChild(table_cell)
             table_cell = document.createElement('td')
             table_cell.onclick = tableCellClick;
+            table_cell.className = "table_cell"
             cell_value = ''
           } else if(current_char == '\n' || current_char == '\r'){
             table.appendChild(table_row)
@@ -67,6 +197,7 @@
           }
           char_index += 1;
         }
+        stepDialog()
       }.bind(reader);
       reader.readAsText(f);
     }

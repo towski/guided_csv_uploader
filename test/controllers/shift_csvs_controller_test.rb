@@ -8,7 +8,7 @@ class ShiftCsvsControllerTest < ActionController::TestCase
       {:column_number => 5, :starting_row => 2, :data_type => "clocked_in_time"},
       {:column_number => 6, :starting_row => 2, :data_type => "clocked_out_date"},
       {:column_number => 7, :starting_row => 2, :data_type => "clocked_out_time"}],
-      :shift_csv => {:csv => csv}
+      :shift_csv => {:csv => csv, :multiple_employees => true}
     assert_response :redirect
   end
 

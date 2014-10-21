@@ -1,0 +1,15 @@
+<% @shift.dummy_employees.each do |employee| %>
+  <p> Employee <%= employee.identifier %> </p>
+  <ul>
+  <% employee.dummy_shifts.order(:wday).each do |shift| %>
+    <li>
+    <%= Date::DAYNAMES[shift.wday] %>
+    <%= shift.clocked_in_time / 60 / 60 %>:<%= "%02i" % (shift.clocked_in_time / 60 % 60) %>
+    -
+    <%= shift.clocked_out_time / 60 / 60 %>:<%= "%02i" % (shift.clocked_out_time / 60 % 60) %>
+    <a href='#' onclick='return false;'>delete</a>
+    </li>
+  <% end %>
+  </ul>
+  <input type='submit' value='Confirm'/>
+<% end %>
