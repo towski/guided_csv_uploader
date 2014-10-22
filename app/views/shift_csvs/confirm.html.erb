@@ -1,5 +1,6 @@
 <% @shift.dummy_employees.each do |employee| %>
-  <p> Employee <%= employee.identifier %> </p>
+  <p> Employee 
+  <input type='text' value='<%= employee.identifier %>' /> </p>
   <ul>
   <% employee.dummy_shifts.order(:wday).each do |shift| %>
     <li>
@@ -13,3 +14,9 @@
   </ul>
   <input type='submit' value='Confirm'/>
 <% end %>
+<p>
+<a href='<%= confirm_shifts_shift_csv_path(@shift) %>'>Confirm shifts</a>
+</p>
+<p>
+<a href='<%= new_shift_csv_path %>'>New csv</a>
+</p>

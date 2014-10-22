@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :shift_csvs do
     member do
       get :confirm
+      get :confirm_shifts
     end
   end
 

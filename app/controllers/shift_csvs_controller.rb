@@ -25,6 +25,10 @@ class ShiftCsvsController < ApplicationController
     @shift = ShiftCsv.find params[:id] 
   end
 
+  def confirm_shifts
+    @shift = ShiftCsv.find params[:id] 
+  end
+
   protected
 
   def check_for_data_finders_params

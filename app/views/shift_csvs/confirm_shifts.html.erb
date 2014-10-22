@@ -1,0 +1,17 @@
+<% @shift.dummy_employees.each do |employee| %>
+  <p> Employee <%= employee.identifier %> </p>
+  <ul>
+  <% employee.dummy_shifts.order(:clocked_in_at).each do |shift| %>
+    <li>
+    <%= shift.clocked_in_at.in_time_zone("Pacific Time (US & Canada)").to_formatted_s(:long)  %>
+    -
+    <%= shift.clocked_out_at.in_time_zone("Pacific Time (US & Canada)").to_formatted_s(:time)  %>
+    <a href='#' onclick='return false;'>delete</a>
+    </li>
+  <% end %>
+  </ul>
+  <input type='submit' value='Confirm'/>
+<% end %>
+<p>
+<a href='<%= new_shift_csv_path %>'>New csv</a>
+</p>

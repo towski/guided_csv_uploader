@@ -91,9 +91,9 @@ class ShiftCsv < ActiveRecord::Base
       @employee = dummy_employees.find_or_create_by :identifier => name
     end
     seconds_away_from_interval = clocked_in_time % 900
-    rounded_in_time = seconds_away_from_interval < 450 ? clocked_in_time - seconds_away_from_interval : clocked_in_time + seconds_away_from_interval
+    rounded_in_time = seconds_away_from_interval < 450 ? clocked_in_time - seconds_away_from_interval : clocked_in_time + (900 - seconds_away_from_interval)
     seconds_away_from_interval = clocked_out_time % 900
-    rounded_out_time = seconds_away_from_interval < 450 ? clocked_out_time - seconds_away_from_interval : clocked_out_time + seconds_away_from_interval
+    rounded_out_time = seconds_away_from_interval < 450 ? clocked_out_time - seconds_away_from_interval : clocked_out_time + (900 - seconds_away_from_interval)
     # if the shift doesn't have any time
     return if rounded_in_time == rounded_out_time && clocked_out_date == clocked_in_date
     if !multiple_employees && @first_date.nil?
