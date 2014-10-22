@@ -85,6 +85,7 @@ class ShiftCsv < ActiveRecord::Base
     clocked_out_time = Chronic.parse(row[clocked_out_time_finder.column_number])
     return if clocked_out_time.nil?
     clocked_out_time = clocked_out_time.seconds_since_midnight
+    # in order to import a maximum of 7 days data for single employee sheets
     return if @first_date && clocked_in_date > @first_date + 7 
     if multiple_employees
       name = row[employee_name_finder.column_number]
@@ -96,6 +97,7 @@ class ShiftCsv < ActiveRecord::Base
     rounded_out_time = seconds_away_from_interval < 450 ? clocked_out_time - seconds_away_from_interval : clocked_out_time + (900 - seconds_away_from_interval)
     # if the shift doesn't have any time
     return if rounded_in_time == rounded_out_time && clocked_out_date == clocked_in_date
+    # for maximum day checking data for single employee sheets
     if !multiple_employees && @first_date.nil?
       @first_date = clocked_in_date
     end

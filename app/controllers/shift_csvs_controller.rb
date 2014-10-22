@@ -23,6 +23,10 @@ class ShiftCsvsController < ApplicationController
 
   def confirm
     @shift = ShiftCsv.find params[:id] 
+    if @shift.dummy_employees.joins(:dummy_shifts).count == 0
+      flash[:message] = "No shifts were imported, please try again"
+      redirect_to new_shift_csv_path
+    end
   end
 
   def confirm_shifts
@@ -34,7 +38,7 @@ class ShiftCsvsController < ApplicationController
   def check_for_data_finders_params
     unless params[:data_finders]
       flash[:message] = "Not enough columns selected"
-      redirect_to new_shift_csvs_path
+      redirect_to new_shift_csv_path
     end
   end
 

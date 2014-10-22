@@ -21,4 +21,28 @@ class ShiftCsvsControllerTest < ActionController::TestCase
       :shift_csv => {:csv => csv}
     assert_response 200
   end
+
+  def test_confirm
+    shift = ShiftCsv.new :csv => File.new("test/fixtures/example_one_employee.csv"), :multiple_employees => false, :employee_name => "Carlo"
+    shift.data_finders.build(:column_number => 0, :starting_row => 8, :data_type => "clocked_in_date")
+    shift.data_finders.build(:column_number => 1, :starting_row => 8, :data_type => "clocked_in_time")
+    shift.data_finders.build(:column_number => 2, :starting_row => 8, :data_type => "clocked_out_date")
+    shift.data_finders.build(:column_number => 3, :starting_row => 8, :data_type => "clocked_out_time")
+    shift.save!
+    get :confirm, :id => shift.id
+    assert_response 200
+  end
+
+  def test_confirm_no_schedules
+    shift = ShiftCsv.new :csv => File.new("test/fixtures/example_one_employee.csv"), :multiple_employees => false, :employee_name => "Carlo"
+    shift.data_finders.build(:column_number => 0, :starting_row => 8, :data_type => "clocked_in_date")
+    shift.data_finders.build(:column_number => 3, :starting_row => 8, :data_type => "clocked_in_time")
+    shift.data_finders.build(:column_number => 2, :starting_row => 8, :data_type => "clocked_out_date")
+    shift.data_finders.build(:column_number => 5, :starting_row => 8, :data_type => "clocked_out_time")
+    shift.save!
+    get :confirm, :id => shift.id
+    assert_response 302
+    debugger
+    assert flash[:message].match(/shift/)
+  end
 end
