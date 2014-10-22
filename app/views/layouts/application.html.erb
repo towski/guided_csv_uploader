@@ -4,11 +4,23 @@
   <title>Homebase</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+  <style>
+  body {
+    font-family: Helvetica
+  }
+  </style>
   <%= csrf_meta_tags %>
 </head>
 <body>
 
+<center><h1>Homebase</h1></center>
+<%= yield :body %>
+<div style='margin:auto; width:1000px; margin-top:80px;'>
 <%= yield %>
+</div>
 
 </body>
 </html>

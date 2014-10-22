@@ -31,6 +31,7 @@ CSVUploader.prototype = {
     $( "#dialog" ).dialog()
     var dialog = document.querySelector("#dialog").parentNode
     dialog.style.top = 0
+    document.querySelector('.ui-dialog-titlebar-close').style.display = 'none'
   },
   startOverOnClick: function(){
     cells = []
@@ -93,7 +94,9 @@ CSVUploader.prototype = {
   },
   stepDialog: function(){
     if(this.current_step == 0){
-      this.showDialog("<p>Is this sheet for a single employee or multiple employees?</p><input type='submit' value='single' onclick='uploader.setMultipleEmployees(false)' /> <input type='submit' value='multiple' onclick='uploader.setMultipleEmployees(true)'/>")
+      this.showDialog("<p>Is this sheet for a single employee or multiple employees?</p>\
+        <input type='submit' value='single' onclick='uploader.setMultipleEmployees(false)' />\
+        <input type='submit' value='multiple' onclick='uploader.setMultipleEmployees(true)'/>")
     } else if (this.current_step == 1){
       if(multiple_employees){
         this.showDialog("Select the cell with the first " + this.data_finders[this.current_step - 1])
