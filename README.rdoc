@@ -1,5 +1,9 @@
 Rails app for allowing the user to upload a csv file, along with location data for where the data lives.
 
+When the user selects the csv file we display it, and ask the user to click on the rows where the data exists. 
+
+Then we upload and parse the csv file, pulling out data at the given location.
+
 Currently works with basic time sheet csv data. 
 
 
